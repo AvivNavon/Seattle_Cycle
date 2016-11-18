@@ -1,1 +1,6 @@
-We will use ggplot2 + ggmap to create a plot of the top 1,500 routes.
+We will use the Pronto Cycle Share system consists of 500 bikes and 54 stations located in Seattle. Pronto provides open data on individual trips, stations, and daily weather.
+
+data is available at:
+https://www.kaggle.com/pronto/cycle-share-dataset
+
+Using ggplot2 + ggmap we will create a plot of the top 1,500 routes.
