@@ -1,0 +1,112 @@
+---
+title: "Seattle - Cycle Share"
+output: html_notebook
+---
+
+First lets import the data and load the relevant libraries.
+
+```{r}
+library(plyr); library(dplyr)
+library(ggplot2)
+library(ggmap)
+library(sp)
+library(grid)
+library(geosphere)
+```
+
+```{r}
+station_data <- read.csv('~/Downloads/cycle-share-dataset/station.csv',
+                         header = TRUE, stringsAsFactors=F)
+trip_data <- read.csv('~/Downloads/cycle-share-dataset/trip.csv', 
+                      header = TRUE, stringsAsFactors=F)
+weather_data <- read.csv('~/Downloads/cycle-share-dataset/weather.csv', 
+                         header = TRUE, stringsAsFactors=F)
+```
+
+```{r}
+# get long & lat for start station
+trip_station_data <- merge(station_data[c('long', 'lat', 'station_id')], 
+                           trip_data[c('trip_id', 'starttime', 'from_station_id', 'to_station_id')], 
+                           by.x = 'station_id', by.y = 'from_station_id')
+head(trip_station_data)
+```
+
+```{r}
+colnames(trip_station_data) <- c('from_station_id', 'from_long', 'from_lat', 'trip_id', 'stattime', 'to_station_id')
+head(trip_station_data)
+```
+
+```{r}
+# get long & lat for end station
+trip_station_data <- merge(trip_station_data, 
+                           station_data[c('long', 'lat', 'station_id')], 
+                           by.x = 'to_station_id', by.y = 'station_id')
+head(trip_station_data)
+```
+
+```{r}
+colnames(trip_station_data) <- c('to_station_id', 'from_station_id', 'from_long', 'from_lat', 'trip_id', 
+                                 'stattime', 'to_long', 'to_lat')
+head(trip_station_data)
+```
+
+```{r}
+# top n routes
+n = 1500
+grp_cols <- c('from_station_id', 'to_station_id')
+
+# Convert character vector to list of symbols
+dots <- lapply(grp_cols, as.symbol)
+
+# Perform frequency counts
+trip_count <- trip_station_data %>%
+              group_by_(.dots=dots) %>%
+              dplyr::summarize(count = n()) %>%
+              arrange(desc(count))
+
+head(trip_count)
+dim(trip_count)
+```
+
+```{r}
+top_trips <- head(trip_count, n)
+```
+
+
+```{r}
+# get only top trips
+all_top_trips <- merge(trip_station_data, top_trips, by = c('from_station_id', 'to_station_id'))
+head(all_top_trips, 10)
+```
+
+```{r}
+# get intermediate points between the two locations
+arch <- gcIntermediate(all_top_trips[c('from_long', 'from_lat')],
+               all_top_trips[c('to_long', 'to_lat')],
+               n = 100,
+               breakAtDateLine = FALSE, 
+               addStartEnd = TRUE, 
+               sp = TRUE)
+```
+
+
+```{r}
+# http://docs.ggplot2.org/0.9.3.1/fortify.map.html
+arch_fortified <- ldply(arch@lines, fortify)
+```
+
+```{r}
+# source the theme_map for ggplot2
+source("https://dl.dropboxusercontent.com/u/2364714/theme_map.R")
+
+ggplot() +
+  geom_line(aes(long, lat, group = group), data = arch_fortified, alpha=0.008, size = 0.5, colour="skyblue1") +
+  coord_cartesian(ylim = c(47.6, 47.68), xlim = c(-122.355, -122.28)) +
+  theme_map() +
+  geom_point(aes(from_long, from_lat), data=all_top_trips, alpha = 0.8, 
+             size = 0.5, colour = "white") +
+  geom_point(aes(to_long, to_lat), data = all_top_trips, alpha = 0.8, 
+             size = 0.5, colour = "white")
+```
+
+
