@@ -5,4 +5,4 @@ https://www.kaggle.com/pronto/cycle-share-dataset
 
 Using ggplot2 + ggmap we will create the following plot of top 1,500 routes:
 
-![img](top_routes.png "Top 1,500 routes")
+![img](Top_Routes_Plot.png "Top 1,500 routes")
