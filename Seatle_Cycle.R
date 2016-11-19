@@ -3,6 +3,7 @@ library(plyr); library(dplyr)
 library(ggplot2)
 library(ggmap)
 library(sp)
+library(grid)
 library(geosphere)
 
 # get data
@@ -49,7 +50,7 @@ top_trips <- merge(trip_station_data, top_routes, by = c('from_station_id', 'to_
 
 # get intermediate points between the two stations
 edges <- gcIntermediate(top_trips[c('from_long', 'from_lat')],
-                       all_top_trips[c('to_long', 'to_lat')],
+                       top_trips[c('to_long', 'to_lat')],
                        n = 10,
                        addStartEnd = TRUE, 
                        sp = TRUE)
@@ -60,13 +61,12 @@ edges_fortified <- ldply(edges@lines, fortify)
 # source for the theme_map for ggplot2
 source("https://dl.dropboxusercontent.com/u/2364714/theme_map.R")
 
-ggplot() +
-  geom_line(aes(long, lat, group = group), data = arch_fortified, alpha=0.009, 
-            size = 0.5, colour="skyblue1") +
+plot <- ggplot() +
+  geom_line(aes(long, lat, group = group), data = edges_fortified, alpha=0.009, 
+            size = 0.5, colour="slategray2")
   coord_cartesian(ylim = c(47.595, 47.67), xlim = c(-122.355, -122.28)) +
   geom_point(aes(from_long, from_lat), data = top_trips, alpha = 0.8, 
              size = 0.4, colour = "white") +
   geom_point(aes(to_long, to_lat), data = top_trips, alpha = 0.8, 
              size = 0.4, colour = "white") +
   theme_map()
-
