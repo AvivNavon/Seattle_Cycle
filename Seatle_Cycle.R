@@ -62,11 +62,12 @@ edges_fortified <- ldply(edges@lines, fortify)
 source("https://dl.dropboxusercontent.com/u/2364714/theme_map.R")
 
 plot <- ggplot() +
-  geom_line(aes(long, lat, group = group), data = edges_fortified, alpha=0.009, 
-            size = 0.5, colour="slategray2")
-  coord_cartesian(ylim = c(47.595, 47.67), xlim = c(-122.355, -122.28)) +
-  geom_point(aes(from_long, from_lat), data = top_trips, alpha = 0.8, 
-             size = 0.4, colour = "white") +
-  geom_point(aes(to_long, to_lat), data = top_trips, alpha = 0.8, 
-             size = 0.4, colour = "white") +
-  theme_map()
+          geom_line(aes(long, lat, group = group), data = edges_fortified, alpha=0.011, 
+                    size = 0.5, colour = "darkseagreen1") +
+          coord_cartesian(ylim = c(47.595, 47.67), xlim = c(-122.355, -122.28)) + 
+          geom_point(aes(from_long, from_lat), data = top_trips, alpha = 0.8, 
+                     size = 0.4, colour = "white") +
+          geom_point(aes(to_long, to_lat), data = top_trips, alpha = 0.8, 
+                     size = 0.4, colour = "white") +
+          theme_map()
+plot
