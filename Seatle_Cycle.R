@@ -8,11 +8,11 @@ library(geosphere)
 
 # get data
 # source: https://www.kaggle.com/pronto/cycle-share-dataset
-station_data <- read.csv('~/Downloads/cycle-share-dataset/station.csv',
+station_data <- read.csv('~/Data/station.csv',
                          header = TRUE, stringsAsFactors=F)
-trip_data <- read.csv('~/Downloads/cycle-share-dataset/trip.csv', 
+trip_data <- read.csv('~/Doata/trip.csv', 
                       header = TRUE, stringsAsFactors=F)
-weather_data <- read.csv('~/Downloads/cycle-share-dataset/weather.csv', 
+weather_data <- read.csv('~/Data/weather.csv', 
                          header = TRUE, stringsAsFactors=F)
 
 
